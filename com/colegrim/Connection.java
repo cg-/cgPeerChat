@@ -1,8 +1,10 @@
 /*
- * Project: Chat
+ * Copyright 2015
+ * Project: cgPeerChat
  * Author: Cole Grim (cg-)
  * Created: 2/10/2015
  */
+
 
 package com.colegrim;
 
