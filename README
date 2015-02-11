@@ -1,3 +1,6 @@
+Chat
+Cole Grim
+
 Chat is a peer-to-peer chat program with a centralized user
 tracker. In this implementation, once the server goes offline,
 the clients have enough information that they will be able
@@ -193,3 +196,7 @@ SHUTDOWN
    <TYPE>~<MSG>
 
    Ex: SHUT~Bye!
+
+LICENSE
+
+   Licensed under AFL3.0
