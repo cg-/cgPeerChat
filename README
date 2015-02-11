@@ -11,15 +11,15 @@ escape codes. This is untested over a network but should work
 fine.
 
 COMPILING & QUICK USAGE
-   In the directory, run javac *.java.
+   In the source directories, run javac *.java.
 
-   To start the server:
+   To start the server from the project root directory:
 
-   java Leader
+   java com.colegrim.Leader
 
    To start a client:
 
-   java Peer
+   java com.colegrim.Peer
 
    Usernames for Peers will be generated using random numbers
    and should work with no options specified. Username for
@@ -33,7 +33,7 @@ USAGE
 
 Peer
 
-   java Peer <options>
+   java com.colegrim.Peer <options>
 
 Options
 
@@ -61,7 +61,7 @@ Options
 
 Leader
 
-   java Leader <options>
+   java com.colegrim.Leader <options>
 
 Options
 
