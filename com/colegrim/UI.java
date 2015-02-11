@@ -46,6 +46,7 @@ public class UI implements Runnable{
     }
 
     private boolean running;
+    private int logginglevel;
     private boolean leader;
     private String username;
     private Client client;
@@ -85,13 +86,21 @@ public class UI implements Runnable{
         String input = null;
         try {
             while ((input = br.readLine()) != null) {
-                if(isValidCommand(input)){
-                    executeCommand(getCommand(input));
-                }else{
-                    displayError("Invalid command entered!");
+                if(!(input.charAt(0) == '/')){
+                    Message toSend = new Message(Message.MessageType.ChatMessage, input);
+                    client.sendMessage(toSend);
+                    displayPrompt();
+                }else {
+                    input = input.substring(1);
+                    if (isValidCommand(input)) {
+                        executeCommand(getCommand(input));
+                    } else {
+                        displayError("Invalid command entered!");
+                    }
                 }
             }
         }catch(Exception e){
+            e.printStackTrace();
             displayError("Trouble processing a command: " + input);
         }
     }
@@ -145,10 +154,12 @@ public class UI implements Runnable{
      * Grabs the userlist from the client and displays it.
      */
     public void displayUserlist(){
-        System.out.println("Currently connected users:");
-        for(String s : client.getUserlist().getStringArray()){
-            System.out.println(s);
+        System.out.println("\nCurrently connected users:");
+        for(User u : client.getUserlist().getOnlineUsers()){
+            System.out.println("* " + u.getUsername());
         }
+        System.out.println("");
+        displayPrompt();
     }
 
     /**
@@ -157,8 +168,8 @@ public class UI implements Runnable{
      * @param msg Error message to display
      */
     public void displayError(String msg){
-        System.err.println("error: " + msg);
-
+        System.err.println(AsciiColor.RED + "\n\terror: " + msg + AsciiColor.RESET);
+        displayPrompt();
     }
 
     /**
@@ -167,7 +178,8 @@ public class UI implements Runnable{
      * @param msg Notification to display
      */
     public void displayNotification(String msg){
-        System.out.println("notification: " + msg);
+        System.out.println(AsciiColor.CYAN + "\n\tnotification: " + msg + AsciiColor.RESET);
+        displayPrompt();
     }
 
     /**
@@ -177,7 +189,8 @@ public class UI implements Runnable{
      * @param msg Message
      */
     public void displayChatMessage(String user, String msg){
-        System.out.println(user + ": " + msg);
+        System.out.println("\n\t" + user + ": " + msg);
+        displayPrompt();
     }
 
     /**
@@ -188,7 +201,8 @@ public class UI implements Runnable{
      * @param color AsciiColor of color to display message in
      */
     public void displayChatMessage(String user, String msg, AsciiColor color){
-        System.out.println(color.code + user + ": " + msg + AsciiColor.RESET);
+        System.out.println("\n\t" + color.code + user + ": " + msg + AsciiColor.RESET);
+        displayPrompt();
     }
 
     /**
@@ -203,5 +217,27 @@ public class UI implements Runnable{
      */
     public void cleanup(){
         displayNotification("Shutting down.");
+    }
+
+    /**
+     * Sets the level of log to display. 0 is off. 1 is all, 2 is some, 3 is only important.
+     *
+     * @param i log level to display
+     */
+    public void setLogginglevel(int i){
+        this.logginglevel = i;
+    }
+
+    /**
+     * Shows a log message.
+     *
+     * @param severity severity (1 lowest, 3 highest)
+     * @param msg message to display
+     */
+    public void logMessage(int severity, String msg){
+        if(logginglevel >= severity) {
+            System.out.println("\nlog: " + msg);
+            displayPrompt();
+        }
     }
 }
