@@ -1,0 +1,195 @@
+Chat is a peer-to-peer chat program with a centralized user
+tracker. In this implementation, once the server goes offline,
+the clients have enough information that they will be able
+to continue chatting with each other.
+
+Color coding is implemented in UNIX/Mac clients using ASCII
+escape codes. This is untested over a network but should work
+fine.
+
+COMPILING & QUICK USAGE
+   In the directory, run javac *.java.
+
+   To start the server:
+
+   java Leader
+
+   To start a client:
+
+   java Peer
+
+   Usernames for Peers will be generated using random numbers
+   and should work with no options specified. Username for
+   the server will default to SERVER.
+
+   With no address information or ports specified, everything
+   will default to localhost and port 4242, and Peers will be
+   assigned random ports to communicate on.
+
+USAGE
+
+Peer
+
+   java Peer <options>
+
+Options
+
+   USERNAME=<name>
+      Sets the username.
+      Default: Randomly generated.
+
+   SERVER=<address>
+      Sets the server address to connect to.
+      Default: localhost
+
+   PORT=<port>
+      Sets the server port to connect to.
+      Default: 4242
+
+   LOGGING=<value>
+      Sets debugging information display.
+         0 = off
+         1 = full
+         2 = some
+         3 = minimal
+      Default: 0
+
+   Example usage: java Peer USERNAME=Cole LOGGING=3
+
+Leader
+
+   java Leader <options>
+
+Options
+
+   USERNAME=<name>
+      Sets the username.
+      Default: SERVER
+
+   PORT=<port>
+      Sets the server port to listen on.
+      Default: 4242
+
+   USERFILE=<file>
+      Parses an input file with specified user information,
+      as required for the assignment this program was originally
+      based on.
+
+      Text file must be formatted as follows:
+         <ip> <username> <port>
+      with each entry on a new line.
+
+      Example:
+      --start file---
+      127.0.0.1 User1 10001
+      127.0.0.1 User2 10002
+      127.0.0.1 User3 10003
+      --end file---
+
+   LOGGING=<value>
+      Sets debugging information display.
+         0 = off
+         1 = full
+         2 = some
+         3 = minimal
+      Default: 0
+
+   Example usage: java Leader USERNAME=Admin LOGGING=1 USERFILE=userlist
+
+COMMANDS
+   The following commands can be entered at the chat screen:
+
+   /list
+      Display all currently connected users.
+
+   /quit
+      Exit the program.
+
+LIMITATIONS/BUGS
+   * Usernames cannot contain non-alphanumerc characters or
+   spaces and must be less than 15 characters.
+
+   * Untested over network. Only tested on localhost. There
+   will likely be issues if an internet connection is lost.
+
+   * When quitting, server occasionally shows erratic info.
+
+   * No arg option to disable unknown users (but there's a
+   bool in Server.java). The error handling on this is
+   untested.
+
+   * Some erratic behavior if a Peer can't connect to the
+   server at startup.
+
+PROTOCOL INFORMATION
+
+Handshakes
+   Upon initial connection to the port listed in the userlist (or
+   in the case of the server, to the server's listening port), the
+   client and server will negotiate a new port to talk on. They will
+   then disconnect and reconnect on the new port, in a new thread on
+   the server (allowing the server to service multiple clients at
+   once).
+
+   In the new thread, the Server will receive a username from the
+   client and mark the client online in the Userlist. If the client
+   is not found, he will create a new entry in the userlist for the
+   client, and assign the client the IP address learned from the
+   socket, and assign him the listening port of the previously
+   determined/negotiated/randomly assigned port that they are
+   currently communicating over. They will then disconnect.
+
+   The client will then begin listening on the port that it sees
+   as assigned to itself in the Userlist.
+
+   A similar handshake occurs when a client connects to another client,
+   but a Message is passed instead of a Userlist.
+
+Message Types
+
+Messages are sent as plain strings. Messages are formatted in
+a specific manner:
+
+   <TYPE>~<MESSAGE>
+
+The MESSAGE field varies depending on the type of message being sent.
+
+LOGO
+   Sent when a client logs off, or when another client detects that a
+   client has disconnected.
+
+   <TYPE>~<USERNAME>
+
+   Ex: LOGO~User1
+
+LOGI
+   Sent when a client logs on. Contains the client's userstring so that
+   everyone can update their userlist with the new user's information.
+
+   <TYPE>~<USERSTRING>
+
+   Ex: LOGI~User1;127.0.0.1;10001;true
+
+CHAT
+   Sent when a user wants to send a chat message to the other users
+   in the group.
+
+   <TYPE>~<CHATMSG>
+
+   Ex: CHAT~Hello!
+
+LIST
+   Sent when the Server wants to send an updated user list to the
+   group.
+
+   <TYPE>~<USER1NAME> <USER1IP> <USER1PORT>#<USER2NAME>...
+
+   Ex: LIST~SERVER;127.0.0.1;4242;false#User1;127.0.0.1;10001;true
+
+SHUTDOWN
+   Sent when the server is shutting down and wants to inform users
+   that no new members can join the chat. The MSG is not used.
+
+   <TYPE>~<MSG>
+
+   Ex: SHUT~Bye!
