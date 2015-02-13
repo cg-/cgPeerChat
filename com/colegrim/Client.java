@@ -221,7 +221,15 @@ public class Client implements Runnable{
                 return;
             case ListUpdate:
                 try{
-                    this.userList = UserList.fromString(m.getPayload());
+                    UserList newList = UserList.fromString(m.getPayload());
+                    if(userList != null)
+                    for(String s : newList.getStringArray()){
+                        if(!userList.containsUser(s)){
+                            ui.displayNewUser(s);
+                        }
+                    }
+                    ui.setUserList(newList.getStringArray());
+                    this.userList = newList;
                 }catch(Exception e){
                     ui.displayError("Malformed userlist received. Ignoring.");
                 }

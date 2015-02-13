@@ -30,14 +30,16 @@ public class UI implements Runnable{
     }
 
     public enum AsciiColor{
-        RESET("\u001B[0m"), RED("\u001B[31m"), GREEN("\u001B[32m"),
-        YELLOW("\u001B[33m"), BLUE("\u001B[34m"), PURPLE("\u001B[35m"),
-        CYAN("\u001B[36m");
+        RESET("\u001B[0m", "<\\font>"), RED("\u001B[31m", "<font color=\"red\">"), GREEN("\u001B[32m", "<font color=\"green\">"),
+        YELLOW("\u001B[33m", "<font color=\"yellow\">"), BLUE("\u001B[34m", "<font color=\"blue\">"), PURPLE("\u001B[35m", "<font color=\"purple\">"),
+        CYAN("\u001B[36m", "<font color=\"cyan\">");
 
         final String code;
+        final String html;
 
-        AsciiColor(String code){
+        AsciiColor(String code, String html){
             this.code = code;
+            this.html = html;
         }
 
         @Override
@@ -204,6 +206,14 @@ public class UI implements Runnable{
     public void displayChatMessage(String user, String msg, AsciiColor color){
         System.out.println("\n\t" + color.code + user + ": " + msg + AsciiColor.RESET);
         displayPrompt();
+    }
+
+    public void displayNewUser(String username){
+        System.out.println("\n\t" + username + " has joined.");
+        displayPrompt();
+    }
+
+    public void setUserList(String[] names){
     }
 
     /**

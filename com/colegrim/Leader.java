@@ -108,6 +108,7 @@ public class Leader {
         serverThread.start();
         clientThread.start();
         uiThread.start();
+
     }
 
     private static void parseFile(String filename){

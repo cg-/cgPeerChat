@@ -82,7 +82,7 @@ public class Peer {
 
         // Start everything up.
         client = new Client(serverAddress, serverPort, username);
-        ui = new UI(username, client);
+        ui = new GUI(username, client);
         ui.setLogginglevel(logging);
         client.attachUI(ui);
         Thread uiThread = new Thread(ui);
